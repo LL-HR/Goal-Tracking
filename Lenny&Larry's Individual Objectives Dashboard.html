@@ -1,0 +1,1296 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Lenny&Larry's Tracking System - Enhanced Dashboard</title>
+    <style>
+        * { box-sizing: border-box; margin: 0; padding: 0; }
+        
+        body {
+            font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', system-ui, sans-serif;
+            background: #f8fafc;
+            color: #334155;
+            line-height: 1.6;
+        }
+        
+        .nav-bar {
+            background: linear-gradient(135deg, #1e40af, #3b82f6);
+            color: white;
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .nav-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+        }
+        
+        .nav-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+        
+        .nav-btn {
+            background: rgba(255,255,255,0.2);
+            border: none;
+            color: white;
+            padding: 0.5rem 1rem;
+            border-radius: 6px;
+            cursor: pointer;
+            transition: all 0.2s;
+        }
+        
+        .nav-btn:hover {
+            background: rgba(255,255,255,0.3);
+        }
+        
+        .nav-btn.active {
+            background: white;
+            color: #1e40af;
+        }
+        
+        .container {
+            max-width: 1400px;
+            margin: 0 auto;
+            padding: 2rem;
+        }
+        
+        .view {
+            display: none;
+        }
+        
+        .view.active {
+            display: block;
+        }
+        
+        /* Dashboard Styles */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+        
+        .kpi-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            text-align: center;
+            transition: transform 0.2s;
+        }
+        
+        .kpi-card:hover {
+            transform: translateY(-2px);
+        }
+        
+        .kpi-value {
+            font-size: 2.5rem;
+            font-weight: bold;
+            color: #1e40af;
+            margin-bottom: 0.5rem;
+        }
+        
+        .kpi-label {
+            color: #64748b;
+            font-size: 0.9rem;
+        }
+        
+        .chart-container {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            margin-bottom: 2rem;
+        }
+        
+        .chart-title {
+            font-size: 1.25rem;
+            font-weight: 600;
+            margin-bottom: 1rem;
+            color: #1e293b;
+        }
+        
+        .progress-bar {
+            width: 100%;
+            height: 20px;
+            background: #e2e8f0;
+            border-radius: 10px;
+            overflow: hidden;
+            margin: 1rem 0;
+        }
+        
+        .progress-fill {
+            height: 100%;
+            background: linear-gradient(90deg, #10b981, #34d399);
+            transition: width 0.3s ease;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            font-size: 0.8rem;
+            font-weight: 600;
+        }
+        
+        .employee-list {
+            display: grid;
+            gap: 1rem;
+        }
+        
+        .employee-card {
+            background: white;
+            padding: 1.5rem;
+            border-radius: 8px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+            border-left: 4px solid #3b82f6;
+        }
+        
+        .employee-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+        
+        .employee-name {
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .status-badge {
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .status-on-track { background: #dcfce7; color: #166534; }
+        .status-delayed { background: #fef3c7; color: #92400e; }
+        .status-postponed { background: #fee2e2; color: #dc2626; }
+        
+        /* Form Styles */
+        .form-container {
+            background: white;
+            border-radius: 12px;
+            padding: 2rem;
+            box-shadow: 0 4px 6px -1px rgba(0, 0, 0, 0.1);
+        }
+        
+        .form-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 2px solid #e2e8f0;
+        }
+        
+        .form-title {
+            color: #1e293b;
+            font-size: 2rem;
+            font-weight: 600;
+            margin-bottom: 0.5rem;
+        }
+        
+        .employee-info {
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 1.25rem;
+            margin-bottom: 2rem;
+            padding: 1.25rem;
+            background: #f8fafc;
+            border-radius: 8px;
+            border: 1px solid #e2e8f0;
+        }
+        
+        .info-field label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.25rem;
+            font-size: 0.875rem;
+        }
+        
+        .info-field input {
+            width: 100%;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        
+        .info-field input:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .objective {
+            background: white;
+            border: 1px solid #e2e8f0;
+            border-radius: 8px;
+            padding: 1.5rem;
+            margin-bottom: 1.25rem;
+            transition: all 0.2s ease;
+        }
+        
+        .objective:hover {
+            border-color: #3b82f6;
+            box-shadow: 0 4px 12px rgba(59, 130, 246, 0.1);
+        }
+        
+        .objective-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.25rem;
+            padding-bottom: 1rem;
+            border-bottom: 1px solid #f1f5f9;
+        }
+        
+        .objective-title {
+            font-size: 1.125rem;
+            font-weight: 600;
+            color: #1e293b;
+        }
+        
+        .objective-weight {
+            background: #f1f5f9;
+            color: #64748b;
+            padding: 0.25rem 0.75rem;
+            border-radius: 20px;
+            font-size: 0.75rem;
+            font-weight: 500;
+        }
+        
+        .objective-description {
+            margin-bottom: 1.25rem;
+        }
+        
+        .objective-description label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+        }
+        
+        .objective-description textarea {
+            width: 100%;
+            min-height: 80px;
+            padding: 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 6px;
+            resize: vertical;
+            font-family: inherit;
+            font-size: 0.875rem;
+            transition: border-color 0.2s;
+        }
+        
+        .objective-description textarea:focus {
+            outline: none;
+            border-color: #3b82f6;
+            box-shadow: 0 0 0 3px rgba(59, 130, 246, 0.1);
+        }
+        
+        .actions-section {
+            margin-bottom: 1.25rem;
+        }
+        
+        .actions-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 0.75rem;
+        }
+        
+        .actions-header h4 {
+            margin: 0;
+            color: #374151;
+            font-size: 0.9rem;
+        }
+        
+        .add-action-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.375rem 0.75rem;
+            border-radius: 4px;
+            font-size: 0.8rem;
+            cursor: pointer;
+            transition: background 0.2s;
+        }
+        
+        .add-action-btn:hover {
+            background: #2563eb;
+        }
+        
+        .action-item {
+            display: flex;
+            gap: 0.75rem;
+            margin-bottom: 0.5rem;
+            align-items: flex-start;
+        }
+        
+        .action-bullet {
+            color: #3b82f6;
+            font-weight: bold;
+            margin-top: 0.5rem;
+        }
+        
+        .action-input {
+            flex: 1;
+            padding: 0.5rem 0.75rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            font-size: 0.875rem;
+        }
+        
+        .remove-action {
+            background: #ef4444;
+            color: white;
+            border: none;
+            padding: 0.25rem 0.5rem;
+            border-radius: 4px;
+            font-size: 0.7rem;
+            cursor: pointer;
+            margin-top: 0.25rem;
+        }
+        
+        .tracking-section {
+            display: grid;
+            grid-template-columns: 1fr 1fr 1fr;
+            gap: 1rem;
+            margin-top: 1.25rem;
+        }
+        
+        .tracking-field {
+            text-align: center;
+        }
+        
+        .tracking-field label {
+            display: block;
+            font-weight: 500;
+            color: #374151;
+            margin-bottom: 0.5rem;
+            font-size: 0.875rem;
+        }
+        
+        .status-buttons {
+            display: flex;
+            gap: 0.25rem;
+            justify-content: center;
+        }
+        
+        .status-btn {
+            padding: 0.375rem 0.75rem;
+            border: 1px solid #d1d5db;
+            background: white;
+            border-radius: 4px;
+            cursor: pointer;
+            font-size: 0.75rem;
+            transition: all 0.2s;
+        }
+        
+        .status-btn.on-track { border-color: #10b981; background: #ecfdf5; color: #047857; }
+        .status-btn.delayed { border-color: #f59e0b; background: #fffbeb; color: #d97706; }
+        .status-btn.postponed { border-color: #ef4444; background: #fef2f2; color: #dc2626; }
+        
+        .status-btn.selected {
+            font-weight: 600;
+            box-shadow: 0 0 0 2px currentColor;
+        }
+        
+        .progress-input {
+            width: 60px;
+            padding: 0.375rem;
+            border: 1px solid #d1d5db;
+            border-radius: 4px;
+            text-align: center;
+            font-size: 0.875rem;
+        }
+        
+        .save-btn {
+            position: fixed;
+            bottom: 20px;
+            right: 20px;
+            background: #10b981;
+            color: white;
+            border: none;
+            padding: 1rem 1.5rem;
+            border-radius: 8px;
+            font-size: 1rem;
+            font-weight: 600;
+            cursor: pointer;
+            box-shadow: 0 4px 12px rgba(16, 185, 129, 0.3);
+            transition: all 0.2s;
+            z-index: 1000;
+        }
+        
+        .save-btn:hover {
+            background: #059669;
+            transform: translateY(-2px);
+        }
+        
+        .export-section {
+            background: white;
+            padding: 2rem;
+            border-radius: 12px;
+            box-shadow: 0 2px 4px rgba(0,0,0,0.1);
+        }
+        
+        .export-buttons {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1rem;
+        }
+        
+        .export-btn {
+            background: #3b82f6;
+            color: white;
+            border: none;
+            padding: 0.75rem 1.5rem;
+            border-radius: 6px;
+            cursor: pointer;
+            font-weight: 500;
+            transition: background 0.2s;
+        }
+        
+        .export-btn:hover {
+            background: #2563eb;
+        }
+        
+        .export-btn.csv {
+            background: #059669;
+        }
+        
+        .export-btn.csv:hover {
+            background: #047857;
+        }
+        
+        .export-btn.print {
+            background: #7c3aed;
+        }
+        
+        .export-btn.print:hover {
+            background: #6d28d9;
+        }
+        
+        @media (max-width: 768px) {
+            .nav-buttons {
+                flex-direction: column;
+                gap: 0.5rem;
+            }
+            
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+            
+            .employee-info {
+                grid-template-columns: 1fr;
+            }
+            
+            .tracking-section {
+                grid-template-columns: 1fr;
+            }
+        }
+    </style>
+</head>
+<body>
+    <nav class="nav-bar">
+        <div class="nav-title">Lenny&Larry's Tracking System</div>
+        <div class="nav-buttons">
+            <button class="nav-btn active" onclick="switchView('dashboard')">📊 Dashboard</button>
+            <button class="nav-btn" onclick="switchView('form')">📝 My Objectives</button>
+            <button class="nav-btn" onclick="switchView('team')">👥 Team View</button>
+            <button class="nav-btn" onclick="switchView('export')">📤 Export</button>
+        </div>
+    </nav>
+
+    <div class="container">
+        <!-- Dashboard View -->
+        <div id="dashboard" class="view active">
+            <h2 style="margin-bottom: 2rem; color: #1e293b;">Performance Dashboard</h2>
+            
+            <div class="dashboard-grid">
+                <div class="kpi-card">
+                    <div class="kpi-value" id="totalEmployees">0</div>
+                    <div class="kpi-label">Total Employees</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="avgProgress">0%</div>
+                    <div class="kpi-label">Average Progress</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="onTrackCount">0</div>
+                    <div class="kpi-label">On Track</div>
+                </div>
+                <div class="kpi-card">
+                    <div class="kpi-value" id="delayedCount">0</div>
+                    <div class="kpi-label">Delayed</div>
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Overall Progress by Objective</div>
+                <div id="objectiveProgress">
+                    <!-- Progress bars will be generated here -->
+                </div>
+            </div>
+
+            <div class="chart-container">
+                <div class="chart-title">Recent Activity</div>
+                <div id="recentActivity">
+                    <!-- Activity feed will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Form View -->
+        <div id="form" class="view">
+            <div class="form-container">
+                <div class="form-header">
+                    <h1 class="form-title">2025 Individual Objectives</h1>
+                    <p>Complete your Management by Objectives and track progress</p>
+                </div>
+                
+                <div class="employee-info">
+                    <div class="info-field">
+                        <label>Employee Name</label>
+                        <input type="text" id="employeeName" placeholder="Enter your name">
+                    </div>
+                    <div class="info-field">
+                        <label>Manager Name</label>
+                        <input type="text" id="managerName" placeholder="Enter manager name">
+                    </div>
+                    <div class="info-field">
+                        <label>Function</label>
+                        <input type="text" id="function" placeholder="Enter department">
+                    </div>
+                    <div class="info-field">
+                        <label>Position Title</label>
+                        <input type="text" id="positionTitle" placeholder="Enter position">
+                    </div>
+                </div>
+                
+                <div id="objectives">
+                    <!-- Objectives will be generated here -->
+                </div>
+            </div>
+        </div>
+
+        <!-- Team View -->
+        <div id="team" class="view">
+            <h2 style="margin-bottom: 2rem; color: #1e293b;">Team Overview</h2>
+            <div id="teamList" class="employee-list">
+                <!-- Team members will be listed here -->
+            </div>
+        </div>
+
+        <!-- Export View -->
+        <div id="export" class="view">
+            <div class="export-section">
+                <h2 style="margin-bottom: 1rem; color: #1e293b;">Export Data</h2>
+                <p style="color: #64748b; margin-bottom: 2rem;">Export MBO data in various formats for reporting and analysis.</p>
+                
+                <div class="export-buttons">
+                    <button class="export-btn" onclick="exportToJSON()">📄 JSON Export</button>
+                    <button class="export-btn csv" onclick="exportToCSV()">📊 CSV Export</button>
+                    <button class="export-btn print" onclick="window.print()">🖨️ Print Report</button>
+                </div>
+                
+                <div style="margin-top: 1rem; padding: 1rem; background: #f1f5f9; border-radius: 6px;">
+                    <h4 style="color: #1e293b; margin-bottom: 0.5rem;">Data Management:</h4>
+                    <div style="display: flex; gap: 0.5rem; flex-wrap: wrap;">
+                        <button onclick="debugShowData()" style="background: #6366f1; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">📊 Show Current Data</button>
+                        <button onclick="clearAllData()" style="background: #dc2626; color: white; border: none; padding: 0.5rem 1rem; border-radius: 4px; cursor: pointer; font-size: 0.8rem;">🗑️ Clear All Data</button>
+                    </div>
+                </div>
+                
+                <div style="margin-top: 2rem; padding: 1.5rem; background: #f8fafc; border-radius: 8px;">
+                    <h3 style="color: #1e293b; margin-bottom: 1rem;">Export Options:</h3>
+                    <ul style="color: #64748b; line-height: 1.8;">
+                        <li><strong>JSON:</strong> Complete data export including all objectives and progress</li>
+                        <li><strong>CSV:</strong> Spreadsheet-friendly format for analysis in Excel</li>
+                        <li><strong>Print:</strong> Formatted report suitable for meetings and reviews</li>
+                    </ul>
+                    
+                    <div style="margin-top: 1rem; padding: 1rem; background: #dbeafe; border-radius: 6px;">
+                        <h4 style="color: #1e40af; margin-bottom: 0.5rem;">💡 How It Works:</h4>
+                        <p style="color: #1e40af; font-size: 0.9rem; margin: 0;">
+                            This system now tracks REAL employee submissions. When employees save their objectives, 
+                            the data appears in the Dashboard and Team View automatically. No more sample data!
+                        </p>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+
+    <button class="save-btn" onclick="saveData()">💾 Save Changes</button>
+
+    <script>
+        const objectives = [
+            { 
+                id: 1, 
+                title: "Strategic Objective 1", 
+                weight: 25,
+                description: "Maintain relentless focus on cost savings initiatives while delivering superior customer service and product quality",
+                actions: ["Achieve service levels > 90%", "Reduce operational costs by 15%", "Implement new quality metrics"]
+            },
+            { 
+                id: 2, 
+                title: "Strategic Objective 2", 
+                weight: 25,
+                description: "Grow distribution channels and execute price advancement strategy",
+                actions: ["Increase TDP from X to Y", "Achieve specific account GSV > $50M", "Maintain T/S below target threshold"]
+            },
+            { 
+                id: 3, 
+                title: "Strategic Objective 3", 
+                weight: 25,
+                description: "Enhance operational efficiency and team productivity",
+                actions: ["Implement process improvements", "Reduce cycle time by 20%", "Increase team efficiency metrics"]
+            },
+            { 
+                id: 4, 
+                title: "Strategic Objective 4", 
+                weight: 20,
+                description: "Drive innovation and digital transformation initiatives",
+                actions: ["Launch new digital tools", "Complete technology upgrade", "Train team on new systems"]
+            },
+            { 
+                id: 5, 
+                title: "Development Objective", 
+                weight: 5,
+                description: "Individual professional development and skill enhancement",
+                actions: ["Complete leadership training", "Attend industry conference", "Obtain relevant certification"]
+            }
+        ];
+
+        let objectiveData = {};
+        let currentView = 'dashboard';
+
+        // Debug function to clear all data (useful for testing)
+        function clearAllData() {
+            if (confirm('⚠️ This will delete ALL employee data. Are you sure?')) {
+                localStorage.removeItem('mboData');
+                localStorage.removeItem('allEmployeeData');
+                location.reload();
+            }
+        }
+
+        // Debug function to check current data
+        function debugShowData() {
+            const realData = getRealEmployeeData();
+            console.log('Current employee count:', realData.length);
+            console.log('Employee data:', realData);
+            alert(`Currently tracking ${realData.length} employees. Check console for details.`);
+        }
+
+        function switchView(viewName) {
+            // Update navigation
+            document.querySelectorAll('.nav-btn').forEach(btn => btn.classList.remove('active'));
+            event.target.classList.add('active');
+            
+            // Update views
+            document.querySelectorAll('.view').forEach(view => view.classList.remove('active'));
+            document.getElementById(viewName).classList.add('active');
+            
+            currentView = viewName;
+            
+            // Refresh data for specific views
+            if (viewName === 'dashboard') {
+                updateDashboard();
+            } else if (viewName === 'team') {
+                updateTeamView();
+            }
+        }
+
+        function createObjectiveHTML(objective) {
+            return `
+                <div class="objective">
+                    <div class="objective-header">
+                        <div class="objective-title">${objective.title}</div>
+                        <div class="objective-weight">${objective.weight}% weight</div>
+                    </div>
+                    
+                    <div class="objective-description">
+                        <label>Strategic Statement</label>
+                        <textarea id="desc-${objective.id}" placeholder="Enter your strategic objective...">${objective.description}</textarea>
+                    </div>
+                    
+                    <div class="actions-section">
+                        <div class="actions-header">
+                            <h4>Specific Actions</h4>
+                            <button class="add-action-btn" onclick="addAction(${objective.id})">+ Add Action</button>
+                        </div>
+                        <div id="actions-${objective.id}">
+                            ${objective.actions.map((action, index) => `
+                                <div class="action-item">
+                                    <div class="action-bullet">●</div>
+                                    <input type="text" class="action-input" value="${action}" placeholder="Enter specific action item...">
+                                    <button class="remove-action" onclick="removeAction(this)">×</button>
+                                </div>
+                            `).join('')}
+                        </div>
+                    </div>
+                    
+                    <div class="tracking-section">
+                        <div class="tracking-field">
+                            <label>Status</label>
+                            <div class="status-buttons">
+                                <button class="status-btn on-track" onclick="setStatus(${objective.id}, 'on-track')">On Track</button>
+                                <button class="status-btn delayed" onclick="setStatus(${objective.id}, 'delayed')">Delayed</button>
+                                <button class="status-btn postponed" onclick="setStatus(${objective.id}, 'postponed')">Postponed</button>
+                            </div>
+                        </div>
+                        <div class="tracking-field">
+                            <label>Mid-Year %</label>
+                            <input type="number" class="progress-input" id="midyear-${objective.id}" min="0" max="100" placeholder="0" onchange="updateProgress()">
+                        </div>
+                        <div class="tracking-field">
+                            <label>Year End %</label>
+                            <input type="number" class="progress-input" id="yearend-${objective.id}" min="0" max="100" placeholder="0" onchange="updateProgress()">
+                        </div>
+                    </div>
+                </div>
+            `;
+        }
+
+        function setStatus(objectiveId, status) {
+            const buttons = document.querySelectorAll(`#objectives .objective:nth-child(${objectiveId}) .status-btn`);
+            buttons.forEach(btn => btn.classList.remove('selected'));
+            
+            const selectedBtn = document.querySelector(`#objectives .objective:nth-child(${objectiveId}) .status-btn.${status}`);
+            selectedBtn.classList.add('selected');
+            
+            if (!objectiveData[objectiveId]) objectiveData[objectiveId] = {};
+            objectiveData[objectiveId].status = status;
+            
+            updateProgress();
+        }
+
+        function addAction(objectiveId) {
+            const actionsContainer = document.getElementById(`actions-${objectiveId}`);
+            const newAction = document.createElement('div');
+            newAction.className = 'action-item';
+            newAction.innerHTML = `
+                <div class="action-bullet">●</div>
+                <input type="text" class="action-input" placeholder="Enter specific action item...">
+                <button class="remove-action" onclick="removeAction(this)">×</button>
+            `;
+            actionsContainer.appendChild(newAction);
+        }
+
+        function removeAction(button) {
+            button.parentElement.remove();
+        }
+
+        function updateProgress() {
+            updateDashboard();
+        }
+
+        function updateDashboard() {
+            // Get real employee data
+            const realData = getRealEmployeeData();
+            
+            // Update KPIs
+            document.getElementById('totalEmployees').textContent = realData.length;
+            
+            if (realData.length > 0) {
+                const avgProgress = realData.reduce((sum, emp) => sum + emp.avgProgress, 0) / realData.length;
+                document.getElementById('avgProgress').textContent = Math.round(avgProgress) + '%';
+                
+                const onTrack = realData.filter(emp => emp.status === 'on-track').length;
+                document.getElementById('onTrackCount').textContent = onTrack;
+                
+                const delayed = realData.filter(emp => emp.status === 'delayed').length;
+                document.getElementById('delayedCount').textContent = delayed;
+            } else {
+                document.getElementById('avgProgress').textContent = '0%';
+                document.getElementById('onTrackCount').textContent = '0';
+                document.getElementById('delayedCount').textContent = '0';
+            }
+            
+            // Update objective progress chart
+            updateObjectiveProgressChart(realData);
+            
+            // Update recent activity
+            updateRecentActivity(realData);
+        }
+
+        function updateObjectiveProgressChart(realData) {
+            const container = document.getElementById('objectiveProgress');
+            
+            if (realData.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 2rem;">No employee data available yet. Employees need to submit their objectives first.</div>';
+                return;
+            }
+            
+            container.innerHTML = objectives.map(obj => {
+                // Calculate average progress for this objective across all employees
+                let totalProgress = 0;
+                let employeeCount = 0;
+                
+                realData.forEach(employee => {
+                    const objData = employee.rawData.objectives[obj.id];
+                    if (objData) {
+                        const progress = parseFloat(objData.yearEnd) || parseFloat(objData.midYear) || 0;
+                        totalProgress += progress;
+                        employeeCount++;
+                    }
+                });
+                
+                const avgProgress = employeeCount > 0 ? Math.round(totalProgress / employeeCount) : 0;
+                
+                return `
+                    <div style="margin-bottom: 1rem;">
+                        <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                            <span style="font-weight: 500;">${obj.title}</span>
+                            <span style="color: #64748b;">${avgProgress}% (${employeeCount} employees)</span>
+                        </div>
+                        <div class="progress-bar">
+                            <div class="progress-fill" style="width: ${avgProgress}%;">
+                                ${avgProgress > 20 ? avgProgress + '%' : ''}
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function updateRecentActivity(realData) {
+            const container = document.getElementById('recentActivity');
+            
+            if (realData.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 2rem;">No recent activity. Waiting for employee submissions.</div>';
+                return;
+            }
+            
+            // Sort employees by last updated date and take most recent activities
+            const recentActivities = realData
+                .filter(emp => emp.lastUpdated && emp.lastUpdated !== 'Never')
+                .sort((a, b) => new Date(b.rawData.timestamp) - new Date(a.rawData.timestamp))
+                .slice(0, 5)
+                .map(emp => {
+                    const updateDate = new Date(emp.rawData.timestamp);
+                    const timeAgo = getTimeAgo(updateDate);
+                    
+                    // Determine what type of update was made
+                    let action = 'Updated objectives';
+                    const objectives = emp.rawData.objectives;
+                    const hasProgress = Object.values(objectives).some(obj => obj.midYear > 0 || obj.yearEnd > 0);
+                    const hasStatus = Object.values(objectives).some(obj => obj.status);
+                    
+                    if (hasProgress && hasStatus) {
+                        action = 'Updated progress and status';
+                    } else if (hasProgress) {
+                        action = 'Updated progress tracking';
+                    } else if (hasStatus) {
+                        action = 'Updated objective status';
+                    }
+                    
+                    return {
+                        user: emp.name,
+                        action: action,
+                        time: timeAgo
+                    };
+                });
+            
+            if (recentActivities.length === 0) {
+                container.innerHTML = '<div style="text-align: center; color: #64748b; padding: 2rem;">No recent activity with timestamps.</div>';
+                return;
+            }
+            
+            container.innerHTML = recentActivities.map(activity => `
+                <div style="padding: 1rem; border-bottom: 1px solid #e2e8f0; display: flex; justify-content: space-between;">
+                    <div>
+                        <div style="font-weight: 500; color: #1e293b;">${activity.user}</div>
+                        <div style="color: #64748b; font-size: 0.875rem;">${activity.action}</div>
+                    </div>
+                    <div style="color: #64748b; font-size: 0.875rem;">${activity.time}</div>
+                </div>
+            `).join('');
+        }
+        
+        function getTimeAgo(date) {
+            const now = new Date();
+            const diffMs = now - date;
+            const diffDays = Math.floor(diffMs / (1000 * 60 * 60 * 24));
+            const diffHours = Math.floor(diffMs / (1000 * 60 * 60));
+            const diffMinutes = Math.floor(diffMs / (1000 * 60));
+            
+            if (diffDays > 0) {
+                return `${diffDays} day${diffDays > 1 ? 's' : ''} ago`;
+            } else if (diffHours > 0) {
+                return `${diffHours} hour${diffHours > 1 ? 's' : ''} ago`;
+            } else if (diffMinutes > 0) {
+                return `${diffMinutes} minute${diffMinutes > 1 ? 's' : ''} ago`;
+            } else {
+                return 'Just now';
+            }
+        }
+
+        function updateTeamView() {
+            const realData = getRealEmployeeData();
+            const container = document.getElementById('teamList');
+            
+            if (realData.length === 0) {
+                container.innerHTML = `
+                    <div style="text-align: center; padding: 3rem; background: white; border-radius: 8px; border: 1px solid #e2e8f0;">
+                        <h3 style="color: #64748b; margin-bottom: 1rem;">No Employee Data Available</h3>
+                        <p style="color: #64748b;">Employees need to complete and submit their MBO forms first.</p>
+                        <p style="color: #64748b; font-size: 0.875rem;">Share the form link with your team to get started.</p>
+                    </div>
+                `;
+                return;
+            }
+            
+            container.innerHTML = realData.map(employee => {
+                // Calculate completion percentage
+                const objectivesWithData = objectives.filter(obj => 
+                    employee.rawData.objectives[obj.id] && 
+                    (employee.rawData.objectives[obj.id].description || 
+                     employee.rawData.objectives[obj.id].midYear || 
+                     employee.rawData.objectives[obj.id].yearEnd)
+                ).length;
+                
+                const completionPercentage = Math.round((objectivesWithData / objectives.length) * 100);
+                
+                return `
+                    <div class="employee-card">
+                        <div class="employee-header">
+                            <div>
+                                <div class="employee-name">${employee.name}</div>
+                                <div style="color: #64748b; font-size: 0.875rem;">${employee.position} • ${employee.function}</div>
+                                <div style="color: #64748b; font-size: 0.75rem;">Manager: ${employee.manager}</div>
+                            </div>
+                            <div class="status-badge status-${employee.status}">${employee.status.replace('-', ' ')}</div>
+                        </div>
+                        <div style="margin: 1rem 0;">
+                            <div style="display: flex; justify-content: space-between; margin-bottom: 0.5rem;">
+                                <span style="font-size: 0.875rem; color: #64748b;">Form Completion</span>
+                                <span style="font-size: 0.875rem; font-weight: 500;">${completionPercentage}%</span>
+                            </div>
+                            <div class="progress-bar" style="height: 8px;">
+                                <div class="progress-fill" style="width: ${completionPercentage}%; height: 100%;"></div>
+                            </div>
+                        </div>
+                        <div style="display: grid; grid-template-columns: 1fr 1fr 1fr; gap: 1rem; margin-top: 1rem;">
+                            <div>
+                                <div style="font-size: 0.875rem; color: #64748b;">Mid-Year</div>
+                                <div style="font-weight: 600; color: #1e293b;">${employee.midYear}%</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.875rem; color: #64748b;">Year-End</div>
+                                <div style="font-weight: 600; color: #1e293b;">${employee.yearEnd}%</div>
+                            </div>
+                            <div>
+                                <div style="font-size: 0.875rem; color: #64748b;">Last Update</div>
+                                <div style="font-weight: 600; color: #1e293b; font-size: 0.75rem;">${employee.lastUpdated}</div>
+                            </div>
+                        </div>
+                    </div>
+                `;
+            }).join('');
+        }
+
+        function getRealEmployeeData() {
+            // Get all employee data from localStorage
+            const allSaved = localStorage.getItem('allEmployeeData');
+            let employeeDataArray = [];
+            
+            if (allSaved) {
+                employeeDataArray = JSON.parse(allSaved);
+            }
+            
+            // Process each employee's data to calculate metrics
+            return employeeDataArray.map(employeeData => {
+                let totalWeightedProgress = 0;
+                let totalWeight = 0;
+                let statusCounts = { 'on-track': 0, 'delayed': 0, 'postponed': 0, 'not-started': 0 };
+                let overallStatus = 'not-started';
+                
+                // Calculate weighted progress and determine overall status
+                objectives.forEach(obj => {
+                    const objData = employeeData.objectives[obj.id];
+                    if (objData) {
+                        const progress = parseFloat(objData.yearEnd) || parseFloat(objData.midYear) || 0;
+                        totalWeightedProgress += (progress * obj.weight / 100);
+                        totalWeight += obj.weight;
+                        
+                        // Count statuses
+                        const status = objData.status || 'not-started';
+                        statusCounts[status] = (statusCounts[status] || 0) + 1;
+                    }
+                });
+                
+                // Determine overall status based on most common status
+                const maxStatus = Object.keys(statusCounts).reduce((a, b) => 
+                    statusCounts[a] > statusCounts[b] ? a : b
+                );
+                overallStatus = maxStatus;
+                
+                const avgProgress = totalWeight > 0 ? totalWeightedProgress : 0;
+                
+                return {
+                    name: employeeData.employee.name || 'Unknown Employee',
+                    manager: employeeData.employee.manager || 'Unknown Manager',
+                    position: employeeData.employee.position || 'Unknown Position',
+                    function: employeeData.employee.function || 'Unknown Function',
+                    status: overallStatus,
+                    midYear: calculateAverageProgress(employeeData, 'midYear'),
+                    yearEnd: calculateAverageProgress(employeeData, 'yearEnd'),
+                    avgProgress: Math.round(avgProgress),
+                    lastUpdated: employeeData.lastUpdated || 'Never',
+                    rawData: employeeData
+                };
+            });
+        }
+        
+        function calculateAverageProgress(employeeData, progressType) {
+            let totalWeightedProgress = 0;
+            let totalWeight = 0;
+            
+            objectives.forEach(obj => {
+                const objData = employeeData.objectives[obj.id];
+                if (objData && objData[progressType]) {
+                    const progress = parseFloat(objData[progressType]) || 0;
+                    totalWeightedProgress += (progress * obj.weight / 100);
+                    totalWeight += obj.weight;
+                }
+            });
+            
+            return totalWeight > 0 ? Math.round(totalWeightedProgress) : 0;
+        }
+
+        function saveData() {
+            const data = {
+                employee: {
+                    name: document.getElementById('employeeName')?.value || '',
+                    manager: document.getElementById('managerName')?.value || '',
+                    function: document.getElementById('function')?.value || '',
+                    position: document.getElementById('positionTitle')?.value || ''
+                },
+                objectives: {},
+                timestamp: new Date().toISOString(),
+                lastUpdated: new Date().toLocaleString()
+            };
+
+            // Validate that employee name is provided
+            if (!data.employee.name.trim()) {
+                alert('❌ Please enter your employee name before saving.');
+                return;
+            }
+
+            objectives.forEach(obj => {
+                const actions = Array.from(document.querySelectorAll(`#actions-${obj.id} .action-input`))
+                    .map(input => input.value);
+                
+                data.objectives[obj.id] = {
+                    title: obj.title,
+                    weight: obj.weight,
+                    description: document.getElementById(`desc-${obj.id}`)?.value || '',
+                    actions: actions,
+                    status: objectiveData[obj.id]?.status || '',
+                    midYear: document.getElementById(`midyear-${obj.id}`)?.value || 0,
+                    yearEnd: document.getElementById(`yearend-${obj.id}`)?.value || 0
+                };
+            });
+
+            // Save individual user data
+            localStorage.setItem('mboData', JSON.stringify(data));
+            
+            // Load existing employee data array
+            const existingData = localStorage.getItem('allEmployeeData');
+            let allEmployeeData = existingData ? JSON.parse(existingData) : [];
+            
+            // Find existing employee record or create new one
+            const existingIndex = allEmployeeData.findIndex(emp => 
+                emp.employee.name.toLowerCase() === data.employee.name.toLowerCase()
+            );
+            
+            if (existingIndex >= 0) {
+                // Update existing employee
+                allEmployeeData[existingIndex] = data;
+                console.log(`Updated existing employee: ${data.employee.name}`);
+            } else {
+                // Add new employee
+                allEmployeeData.push(data);
+                console.log(`Added new employee: ${data.employee.name}`);
+            }
+            
+            // Save updated array back to localStorage
+            localStorage.setItem('allEmployeeData', JSON.stringify(allEmployeeData));
+            
+            alert('✅ Data saved successfully!');
+            console.log('Current employee count:', allEmployeeData.length);
+            
+            // Refresh dashboard if we're currently viewing it
+            if (currentView === 'dashboard') {
+                updateDashboard();
+            } else if (currentView === 'team') {
+                updateTeamView();
+            }
+        }
+
+        function loadData() {
+            const saved = localStorage.getItem('mboData');
+            if (saved) {
+                const data = JSON.parse(saved);
+                
+                // Load employee info
+                if (document.getElementById('employeeName')) {
+                    document.getElementById('employeeName').value = data.employee?.name || '';
+                    document.getElementById('managerName').value = data.employee?.manager || '';
+                    document.getElementById('function').value = data.employee?.function || '';
+                    document.getElementById('positionTitle').value = data.employee?.position || '';
+                }
+                
+                // Load objectives
+                Object.keys(data.objectives || {}).forEach(objId => {
+                    const objData = data.objectives[objId];
+                    const descElement = document.getElementById(`desc-${objId}`);
+                    const midYearElement = document.getElementById(`midyear-${objId}`);
+                    const yearEndElement = document.getElementById(`yearend-${objId}`);
+                    
+                    if (descElement) descElement.value = objData.description || '';
+                    if (midYearElement) midYearElement.value = objData.midYear || '';
+                    if (yearEndElement) yearEndElement.value = objData.yearEnd || '';
+                    
+                    if (objData.status) {
+                        setStatus(parseInt(objId), objData.status);
+                    }
+                    
+                    // Load action items
+                    const actionsContainer = document.getElementById(`actions-${objId}`);
+                    if (actionsContainer && objData.actions) {
+                        // Clear existing actions first
+                        actionsContainer.innerHTML = '';
+                        
+                        // Add saved actions or default empty ones
+                        const actionsToAdd = objData.actions.length > 0 ? objData.actions : ['', '', ''];
+                        actionsToAdd.forEach(actionText => {
+                            const actionDiv = document.createElement('div');
+                            actionDiv.className = 'action-item';
+                            actionDiv.innerHTML = `
+                                <div class="action-bullet">●</div>
+                                <input type="text" class="action-input" value="${actionText}" placeholder="Enter specific action item...">
+                                <button class="remove-action" onclick="removeAction(this)">×</button>
+                            `;
+                            actionsContainer.appendChild(actionDiv);
+                        });
+                    }
+                });
+                
+                console.log('Loaded data for employee:', data.employee?.name);
+            }
+        }
+
+        function exportToJSON() {
+            const realData = getRealEmployeeData();
+            const data = {
+                exportDate: new Date().toISOString(),
+                totalEmployees: realData.length,
+                employeeData: realData.map(emp => emp.rawData), // Export the full raw data
+                summary: {
+                    averageProgress: realData.length > 0 ? realData.reduce((sum, emp) => sum + emp.avgProgress, 0) / realData.length : 0,
+                    statusBreakdown: {
+                        onTrack: realData.filter(emp => emp.status === 'on-track').length,
+                        delayed: realData.filter(emp => emp.status === 'delayed').length,
+                        postponed: realData.filter(emp => emp.status === 'postponed').length,
+                        notStarted: realData.filter(emp => emp.status === 'not-started').length
+                    }
+                }
+            };
+            
+            const blob = new Blob([JSON.stringify(data, null, 2)], { type: 'application/json' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mbo-data-${new Date().toISOString().split('T')[0]}.json`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('Exported data for', realData.length, 'employees');
+        }
+
+        function exportToCSV() {
+            const realData = getRealEmployeeData();
+            
+            if (realData.length === 0) {
+                alert('No employee data available to export. Employees need to submit their objectives first.');
+                return;
+            }
+            
+            const headers = [
+                'Employee Name', 'Manager', 'Function', 'Position', 
+                'Objective 1 Progress', 'Objective 1 Status',
+                'Objective 2 Progress', 'Objective 2 Status',
+                'Objective 3 Progress', 'Objective 3 Status',
+                'Objective 4 Progress', 'Objective 4 Status',
+                'Objective 5 Progress', 'Objective 5 Status',
+                'Overall Progress', 'Mid-Year Average', 'Year-End Average',
+                'Overall Status', 'Last Updated'
+            ];
+            
+            const rows = realData.map(emp => [
+                emp.name,
+                emp.manager,
+                emp.function,
+                emp.position,
+                emp.rawData.objectives[1]?.yearEnd || emp.rawData.objectives[1]?.midYear || 0,
+                emp.rawData.objectives[1]?.status || 'Not Set',
+                emp.rawData.objectives[2]?.yearEnd || emp.rawData.objectives[2]?.midYear || 0,
+                emp.rawData.objectives[2]?.status || 'Not Set',
+                emp.rawData.objectives[3]?.yearEnd || emp.rawData.objectives[3]?.midYear || 0,
+                emp.rawData.objectives[3]?.status || 'Not Set',
+                emp.rawData.objectives[4]?.yearEnd || emp.rawData.objectives[4]?.midYear || 0,
+                emp.rawData.objectives[4]?.status || 'Not Set',
+                emp.rawData.objectives[5]?.yearEnd || emp.rawData.objectives[5]?.midYear || 0,
+                emp.rawData.objectives[5]?.status || 'Not Set',
+                emp.avgProgress + '%',
+                emp.midYear + '%',
+                emp.yearEnd + '%',
+                emp.status,
+                emp.lastUpdated
+            ]);
+            
+            const csvContent = [headers, ...rows]
+                .map(row => row.map(field => `"${field}"`).join(','))
+                .join('\n');
+            
+            const blob = new Blob([csvContent], { type: 'text/csv' });
+            const url = URL.createObjectURL(blob);
+            const a = document.createElement('a');
+            a.href = url;
+            a.download = `mbo-report-${new Date().toISOString().split('T')[0]}.csv`;
+            document.body.appendChild(a);
+            a.click();
+            document.body.removeChild(a);
+            URL.revokeObjectURL(url);
+            
+            console.log('Exported CSV for', realData.length, 'employees');
+        }
+
+        function initializeObjectives() {
+            const container = document.getElementById('objectives');
+            if (container) {
+                container.innerHTML = objectives.map(obj => createObjectiveHTML(obj)).join('');
+            }
+            loadData();
+            updateDashboard();
+        }
+
+        // Initialize the application
+        document.addEventListener('DOMContentLoaded', function() {
+            initializeObjectives();
+        });
+    </script>
+</body>
+</html>
